@@ -6,22 +6,45 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "supabase:start": "pnpx supabase status || pnpx supabase start",
+    "supabase:stop": "pnpx supabase stop",
+    "supabase:reset": "pnpx supabase db reset",
+    "supabase:status": "pnpx supabase status",
+    "supabase:test": "pnpx supabase db test",
+    "supabase:typegen": "pnpx supabase gen types --local --schema public > ./supabase/src/database.types.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@marsidev/react-turnstile": "^1.3.1",
+    "@radix-ui/react-icons": "^1.3.2",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.58.0",
+    "@tanstack/react-query": "^5.90.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0",
+    "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "react-hook-form": "^7.64.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "supabase": "^2.45.5",
+    "tailwindcss": "4.1.13",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.9.2"
   }
 }

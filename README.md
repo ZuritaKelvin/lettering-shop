@@ -1,24 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎨 Lettering Shop
 
-## Getting Started
+E-commerce de ropa única con diseños de lettering y caligrafía.
 
-First, run the development server:
+## 🚀 Stack Tecnológico
 
+- **Framework**: Next.js 15 (App Router)
+- **Base de datos**: Supabase (local con Docker)
+- **Autenticación**: Supabase Auth
+- **Estilos**: TailwindCSS + shadcn/ui
+- **Lenguaje**: TypeScript
+- **Iconos**: Lucide React
+
+## ✨ Características Implementadas
+
+- ✅ Sistema de autenticación completo (registro e inicio de sesión)
+- ✅ Protección de rutas con middleware
+- ✅ Base de datos con Row Level Security (RLS)
+- ✅ Interfaz moderna y responsiva
+- ✅ Gestión de cuentas de usuario
+
+## 📋 Requisitos Previos
+
+- Node.js 20+
+- pnpm
+- Docker Desktop (para Supabase local)
+
+## 🛠️ Instalación
+
+1. **Clonar e instalar dependencias**:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Configurar variables de entorno**:
+```bash
+# Copiar el archivo de ejemplo
+cp env.example.txt .env.local
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Iniciar Supabase local
+pnpm supabase:start
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Copiar el "anon key" mostrado en la terminal y pegarlo en .env.local
+```
+
+3. **Iniciar el servidor de desarrollo**:
+```bash
+pnpm dev
+```
+
+4. **Abrir en el navegador**: [http://localhost:3000](http://localhost:3000)
+
+## 📝 Scripts Disponibles
+
+```bash
+# Desarrollo
+pnpm dev              # Iniciar servidor de desarrollo
+
+# Supabase
+pnpm supabase:start   # Iniciar Supabase local
+pnpm supabase:stop    # Detener Supabase
+pnpm supabase:status  # Ver estado de Supabase
+pnpm supabase:reset   # Resetear base de datos
+pnpm supabase:typegen # Generar tipos TypeScript
+
+# Build
+pnpm build            # Compilar para producción
+pnpm start            # Iniciar servidor de producción
+```
+
+## 📖 Documentación
+
+Para información detallada sobre el sistema de autenticación, consulta [CONFIGURACION_AUTH.md](./CONFIGURACION_AUTH.md)
 
 ## Learn More
 
