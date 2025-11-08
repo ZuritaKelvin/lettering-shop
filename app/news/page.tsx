@@ -1,7 +1,18 @@
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
 import { getSupabaseServerClient } from "@/supabase/src/clients/server-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Newspaper, Calendar } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Noticias",
+  description: "Mantente al día con las últimas noticias y actualizaciones de Lettering Shop. Descubre nuevas colecciones y diseños exclusivos.",
+  openGraph: {
+    title: "Noticias | Lettering Shop",
+    description: "Mantente al día con las últimas noticias y actualizaciones de Lettering Shop",
+    type: "website",
+  },
+};
 
 export default async function NewsPage() {
   const supabase = getSupabaseServerClient();
@@ -16,19 +27,19 @@ export default async function NewsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Page Header */}
           <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full">
-              <Newspaper className="h-8 w-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full">
+              <Newspaper className="h-8 w-8 text-primary-foreground" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Latest News
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+              Últimas Noticias
             </h1>
-            <p className="text-lg text-gray-600">
-              Stay updated with the latest from Lettering Shop
+            <p className="text-lg text-muted-foreground">
+              Mantente al día con las últimas novedades de Lettering Shop
             </p>
           </div>
 
@@ -36,38 +47,37 @@ export default async function NewsPage() {
           <div className="space-y-6">
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Calendar className="h-4 w-4" />
-                  <span>October 14, 2025</span>
+                  <span>14 de Octubre, 2025</span>
                 </div>
                 <CardTitle className="text-2xl">
-                  Welcome to Lettering Shop! 🎉
+                  ¡Bienvenido a Lettering Shop! 🎉
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  We're excited to launch our new e-commerce platform featuring
-                  unique clothing with beautiful lettering and calligraphy
-                  designs. Stay tuned for more updates!
+                <p className="text-muted-foreground">
+                  Estamos emocionados de lanzar nuestra nueva plataforma de e-commerce
+                  con ropa única que presenta hermosos diseños de lettering y caligrafía.
+                  ¡Mantente atento a más actualizaciones!
                 </p>
               </CardContent>
             </Card>
 
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Calendar className="h-4 w-4" />
-                  <span>Coming Soon</span>
+                  <span>Próximamente</span>
                 </div>
                 <CardTitle className="text-2xl">
-                  New Collection Preview ✨
+                  Vista Previa de Nueva Colección ✨
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  Get ready for our upcoming collection featuring exclusive
-                  designs from talented calligraphy artists. More details
-                  coming soon!
+                <p className="text-muted-foreground">
+                  Prepárate para nuestra próxima colección con diseños exclusivos
+                  de talentosos artistas de caligrafía. ¡Más detalles próximamente!
                 </p>
               </CardContent>
             </Card>

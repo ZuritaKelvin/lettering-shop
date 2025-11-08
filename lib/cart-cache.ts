@@ -141,8 +141,16 @@ function calculateCartTotal(items: CartItem[]): number {
 
 /**
  * Get cart item count
+ * Now reads from the synced cache instead of the full cart
  */
 export function getCartItemCount(): number {
-  const cart = getCartFromCache();
-  return cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  if (typeof window === "undefined") return 0;
+  
+  try {
+    const count = localStorage.getItem("lettering-shop-cart-count");
+    return count ? parseInt(count, 10) : 0;
+  } catch (error) {
+    console.error("Error reading cart count:", error);
+    return 0;
+  }
 }

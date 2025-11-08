@@ -8,10 +8,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import { getCartItemCount } from "@/lib/cart-cache";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [cartItemCount, setCartItemCount] = useState(0);
+
+  // Hide header on auth pages
+  const isAuthPage = pathname?.startsWith("/auth");
 
   // Filter routes by position
   const leftRoutes = sideHeaderConfig.routes.filter(
@@ -26,17 +30,22 @@ export function SiteHeader() {
     setCartItemCount(getCartItemCount());
   }, [pathname]);
 
+  // Don't render header on auth pages
+  if (isAuthPage) {
+    return null;
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Left side: Logo + App Name + Navigation Links */}
         <div className="flex items-center gap-6">
           {/* Logo and Name */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-pink-600">
-              <Sparkles className="h-6 w-6 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+              <Sparkles className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold text-foreground">
               {sideHeaderConfig.appName}
             </span>
           </Link>
@@ -54,8 +63,8 @@ export function SiteHeader() {
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors rounded-md",
                     isActive
-                      ? "text-purple-600 bg-purple-50"
-                      : "text-gray-700 hover:text-purple-600 hover:bg-gray-50"
+                      ? "text-primary bg-secondary"
+                      : "text-foreground/80 hover:text-primary hover:bg-accent"
                   )}
                 >
                   <Icon className="h-4 w-4" />
@@ -80,8 +89,7 @@ export function SiteHeader() {
                     variant={isActive ? "default" : "ghost"}
                     size="icon"
                     className={cn(
-                      isActive &&
-                        "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                      isActive && "bg-primary hover:bg-primary/90"
                     )}
                   >
                     <Icon className="h-5 w-5" />
@@ -97,11 +105,13 @@ export function SiteHeader() {
               </div>
             );
           })}
+          {/* Theme Toggle */}
+          <ThemeToggle />
         </div>
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden border-t bg-white px-4 py-2">
+      <div className="md:hidden border-t bg-background px-4 py-2">
         <nav className="flex items-center justify-around">
           {leftRoutes.map((route) => {
             const Icon = route.icon;
@@ -114,8 +124,8 @@ export function SiteHeader() {
                 className={cn(
                   "flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors rounded-md",
                   isActive
-                    ? "text-purple-600"
-                    : "text-gray-600 hover:text-purple-600"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-primary"
                 )}
               >
                 <Icon className="h-5 w-5" />

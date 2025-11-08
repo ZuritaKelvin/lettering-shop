@@ -5,9 +5,11 @@ const nextConfig = {
   /* config options here */
   images: {
     remotePatterns: getRemotePatterns(),
+    formats: ['image/avif', 'image/webp'],
   },
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
+  // Habilitado TypeScript y ESLint para mejor calidad de código
+  // eslint: { ignoreDuringBuilds: false },
+  // typescript: { ignoreBuildErrors: false },
 };
 
 export default nextConfig;
@@ -24,9 +26,16 @@ function getRemotePatterns() {
     });
   }
 
+  // Add product image domains
+  remotePatterns.push({
+    protocol: "https",
+    hostname: "www.pngkey.com",
+  });
+
   return IS_PRODUCTION
     ? remotePatterns
     : [
+        ...remotePatterns,
         {
           protocol: "http",
           hostname: "127.0.0.1",

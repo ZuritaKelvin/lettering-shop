@@ -17,7 +17,7 @@ export default async function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-orange-950/20">
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Page Header */}
@@ -28,7 +28,7 @@ export default async function SearchPage() {
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Search Products
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Find your perfect lettering design
             </p>
           </div>
@@ -37,7 +37,7 @@ export default async function SearchPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search for products..."
@@ -48,13 +48,13 @@ export default async function SearchPage() {
           </Card>
 
           {/* Coming Soon Message */}
-          <Card className="border-2 border-dashed border-purple-300 bg-white/50">
+          <Card className="border-2 border-dashed border-purple-300 dark:border-purple-700 bg-card/50">
             <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
               <Search className="h-16 w-16 text-purple-400" />
-              <h2 className="text-2xl font-bold text-gray-700">
+              <h2 className="text-2xl font-bold text-foreground">
                 Search Coming Soon
               </h2>
-              <p className="text-gray-600 text-center max-w-md">
+              <p className="text-muted-foreground text-center max-w-md">
                 We're building a powerful search feature to help you find the
                 perfect products. Stay tuned!
               </p>

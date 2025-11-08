@@ -63,7 +63,7 @@ grant usage on schema public to authenticated;
 grant usage on schema public to service_role;
 
 create type public.payment_status as ENUM('pending', 'succeeded', 'failed');
-
+create type public.colors as ENUM('red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'black', 'white', 'gray');
 
 /*
  * -------------------------------------------------------
@@ -117,6 +117,14 @@ create index if not exists ix_accounts_is_personal_account on public.accounts (i
 -- RLS on the accounts table
 -- UPDATE(accounts):
 -- Team owners can update their accounts
+create policy accounts_select on public.accounts
+for select
+  to authenticated using (
+    (
+      select
+        auth.uid ()
+    ) = user_id
+  );
 create policy accounts_self_update on public.accounts
 for update
   to authenticated using (
@@ -192,9 +200,7 @@ create table products (
     name text not null,
     description text,
     price numeric not null,
-    image_url text,
-    delivery_date date not null,
-    stock int not null
+    delivery_date date not null
 );
 alter table products enable row level security;
 
@@ -202,6 +208,73 @@ create policy "Users can view" on public.products
     for select to authenticated using (true);
 create policy "Admin can manage products" on public.products
     for all to service_role using (true) with check (true);
+
+/**
+ * -------------------------------------------------------
+ * Section: Product Colors
+ * We create the schema for the product colors.
+ * -------------------------------------------------------
+ */
+create table product_colors (
+    id uuid default uuid_generate_v4() primary key,
+    product_id uuid references products(id) not null,
+    color public.colors not null,
+    image_url text,
+    stock int not null
+);
+alter table product_colors enable row level security;
+
+create policy "Users can view product colors" on public.product_colors
+    for select to authenticated using (stock > 0);
+create policy "Admin can manage product colors" on public.product_colors
+    for all to service_role using (true) with check (true);
+
+/**
+ * -------------------------------------------------------
+ * Section: Cart Items
+ * We create the schema for the cart items. Cart items are temporary items before checkout.
+ * -------------------------------------------------------
+ */
+create table cart_items (
+    id uuid default uuid_generate_v4() primary key,
+    user_id uuid references auth.users(id) on delete cascade not null,
+    product_color_id uuid references product_colors(id) on delete cascade not null,
+    quantity int not null default 1,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+    unique(user_id, product_color_id)
+);
+
+alter table cart_items enable row level security;
+
+create policy "Users can view their own cart" on public.cart_items
+    for select to authenticated using (user_id = auth.uid());
+    
+create policy "Users can insert to their own cart" on public.cart_items
+    for insert to authenticated with check (user_id = auth.uid());
+    
+create policy "Users can update their own cart" on public.cart_items
+    for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+    
+create policy "Users can delete from their own cart" on public.cart_items
+    for delete to authenticated using (user_id = auth.uid());
+
+-- Index for faster queries
+create index idx_cart_items_user_id on cart_items(user_id);
+
+-- Trigger to update updated_at
+create or replace function update_cart_updated_at()
+returns trigger as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger cart_items_updated_at
+    before update on cart_items
+    for each row
+    execute function update_cart_updated_at();
 
 /**
  * -------------------------------------------------------

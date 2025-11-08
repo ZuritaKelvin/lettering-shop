@@ -18,64 +18,119 @@ import {
   ShoppingBag,
   ArrowRight,
 } from "lucide-react";
+import Image from "next/image";
 import {
-  getCartFromCache,
-  removeItemFromCart,
-  updateItemQuantity,
+  getCartItems,
+  updateCartItem,
+  removeFromCart,
   clearCart,
-  type Cart,
-  type CartItem,
-} from "@/lib/cart-cache";
+} from "@/app/cart/actions";
+import { toast } from "sonner";
+import { updateCartCount } from "@/lib/cart-sync";
+
+interface CartItem {
+  id: string;
+  quantity: number;
+  created_at: string;
+  product_color_id: string;
+  product_colors: {
+    id: string;
+    color: string;
+    image_url: string | null;
+    stock: number;
+    product_id: string;
+    products: {
+      id: string;
+      name: string;
+      description: string | null;
+      price: number;
+      delivery_date: string;
+    };
+  };
+}
 
 export default function CartPage() {
   const router = useRouter();
-  const [cart, setCart] = useState<Cart>({
-    items: [],
-    total: 0,
-    updatedAt: new Date().toISOString(),
-  });
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Load cart from cache on mount
-    const cachedCart = getCartFromCache();
-    setCart(cachedCart);
+  const loadCart = async () => {
+    setIsLoading(true);
+    const result = await getCartItems();
+    if (result.success && result.data) {
+      const items = result.data as CartItem[];
+      setCartItems(items);
+      
+      // Update cart count in cache for header badge
+      const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+      updateCartCount(totalItems);
+    } else {
+      toast.error(result.error || "Failed to load cart");
+    }
     setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadCart();
   }, []);
 
-  const handleRemoveItem = (itemId: string) => {
-    const updatedCart = removeItemFromCart(itemId);
-    setCart(updatedCart);
+  const handleRemoveItem = async (itemId: string) => {
+    const result = await removeFromCart(itemId);
+    if (result.success) {
+      toast.success("Item removed from cart");
+      loadCart();
+    } else {
+      toast.error(result.error || "Failed to remove item");
+    }
   };
 
-  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
-    const updatedCart = updateItemQuantity(itemId, newQuantity);
-    setCart(updatedCart);
+  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      handleRemoveItem(itemId);
+      return;
+    }
+
+    const result = await updateCartItem({ cartItemId: itemId, quantity: newQuantity });
+    if (result.success) {
+      loadCart();
+    } else {
+      toast.error(result.error || "Failed to update quantity");
+    }
   };
 
-  const handleClearCart = () => {
-    const emptyCart = clearCart();
-    setCart(emptyCart);
+  const handleClearCart = async () => {
+    const result = await clearCart();
+    if (result.success) {
+      toast.success("Cart cleared");
+      loadCart();
+    } else {
+      toast.error(result.error || "Failed to clear cart");
+    }
   };
 
   const handleCheckout = () => {
     // TODO: Implement checkout logic
-    alert("Checkout functionality coming soon!");
+    toast.info("Checkout functionality coming soon!");
   };
+
+  const total = cartItems.reduce(
+    (sum, item) => sum + (item.product_colors.products.price * item.quantity),
+    0
+  );
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-orange-950/20 flex items-center justify-center">
         <div className="text-center">
-          <ShoppingCart className="h-12 w-12 text-purple-600 animate-pulse mx-auto" />
-          <p className="mt-4 text-gray-600">Loading cart...</p>
+          <ShoppingCart className="h-12 w-12 text-purple-600 dark:text-purple-400 animate-pulse mx-auto" />
+          <p className="mt-4 text-muted-foreground">Loading cart...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-orange-950/20">
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Page Header */}
@@ -86,22 +141,22 @@ export default function CartPage() {
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Shopping Cart
             </h1>
-            <p className="text-lg text-gray-600">
-              {cart.items.length > 0
-                ? `${cart.items.length} item${cart.items.length !== 1 ? "s" : ""} in your cart`
+            <p className="text-lg text-muted-foreground">
+              {cartItems.length > 0
+                ? `${cartItems.length} item${cartItems.length !== 1 ? "s" : ""} in your cart`
                 : "Your cart is empty"}
             </p>
           </div>
 
           {/* Cart Content */}
-          {cart.items.length === 0 ? (
-            <Card className="border-2 border-dashed border-purple-300 bg-white/50">
+          {cartItems.length === 0 ? (
+            <Card className="border-2 border-dashed border-purple-300 dark:border-purple-700 bg-card/50">
               <CardContent className="flex flex-col items-center justify-center py-16 space-y-4">
                 <ShoppingBag className="h-16 w-16 text-purple-400" />
-                <h2 className="text-2xl font-bold text-gray-700">
+                <h2 className="text-2xl font-bold text-foreground">
                   Your cart is empty
                 </h2>
-                <p className="text-gray-600 text-center max-w-md">
+                <p className="text-muted-foreground text-center max-w-md">
                   Start shopping and add some amazing products to your cart!
                 </p>
                 <Button
@@ -118,7 +173,7 @@ export default function CartPage() {
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-foreground">
                     Cart Items
                   </h2>
                   <Button
@@ -131,7 +186,7 @@ export default function CartPage() {
                   </Button>
                 </div>
 
-                {cart.items.map((item) => (
+                {cartItems.map((item) => (
                   <CartItemCard
                     key={item.id}
                     item={item}
@@ -153,19 +208,19 @@ export default function CartPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Subtotal</span>
+                        <span className="text-muted-foreground">Subtotal</span>
                         <span className="font-medium">
-                          ${cart.total.toFixed(2)}
+                          €{total.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Shipping</span>
+                        <span className="text-muted-foreground">Shipping</span>
                         <span className="font-medium text-green-600">Free</span>
                       </div>
                       <div className="border-t pt-2 flex justify-between">
                         <span className="font-semibold">Total</span>
                         <span className="font-bold text-lg text-purple-600">
-                          ${cart.total.toFixed(2)}
+                          €{total.toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -207,26 +262,41 @@ function CartItemCard({
   onRemove: (id: string) => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
 }) {
+  const product = item.product_colors.products;
+  const color = item.product_colors;
+
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex gap-4">
-          {/* Product Image Placeholder */}
-          <div className="w-24 h-24 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center flex-shrink-0">
-            <ShoppingBag className="h-8 w-8 text-purple-600" />
-          </div>
+          {/* Product Image */}
+          {color.image_url ? (
+            <div className="w-24 h-24 bg-muted/30 rounded-lg flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+              <Image
+                src={color.image_url}
+                alt={product.name}
+                fill
+                className="object-contain"
+                sizes="96px"
+              />
+            </div>
+          ) : (
+            <div className="w-24 h-24 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center flex-shrink-0">
+              <ShoppingBag className="h-8 w-8 text-purple-600" />
+            </div>
+          )}
 
           {/* Product Details */}
           <div className="flex-1 space-y-2">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                {item.size && (
-                  <p className="text-sm text-gray-600">Size: {item.size}</p>
-                )}
-                {item.color && (
-                  <p className="text-sm text-gray-600">Color: {item.color}</p>
-                )}
+                <h3 className="font-semibold text-foreground">{product.name}</h3>
+                <p className="text-sm text-muted-foreground capitalize">
+                  Color: {color.color}
+                </p>
+                <p className="text-xs text-muted-foreground/80">
+                  Delivery: {new Date(product.delivery_date).toLocaleDateString()}
+                </p>
               </div>
               <Button
                 variant="ghost"
@@ -247,6 +317,7 @@ function CartItemCard({
                   onClick={() =>
                     onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))
                   }
+                  disabled={item.quantity <= 1}
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
@@ -258,17 +329,18 @@ function CartItemCard({
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                  disabled={item.quantity >= color.stock}
                 >
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>
 
               <div className="text-right">
-                <p className="text-sm text-gray-600">
-                  ${item.price.toFixed(2)} each
+                <p className="text-sm text-muted-foreground">
+                  €{product.price.toFixed(2)} each
                 </p>
                 <p className="font-semibold text-purple-600">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  €{(product.price * item.quantity).toFixed(2)}
                 </p>
               </div>
             </div>
