@@ -55,8 +55,8 @@ export default async function SearchPage() {
                 Search Coming Soon
               </h2>
               <p className="text-muted-foreground text-center max-w-md">
-                We're building a powerful search feature to help you find the
-                perfect products. Stay tuned!
+                We&apos;re building a powerful search feature to help you find
+                the perfect products. Stay tuned!
               </p>
             </CardContent>
           </Card>

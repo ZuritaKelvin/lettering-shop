@@ -1,5 +1,4 @@
 "use server";
-/*eslint-disalbe @typescript-eslint/no-explicit-any */
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -17,7 +16,7 @@ const signInSchema = z.object({
   password: z.string().min(1, "La contraseña es requerida"),
 });
 
-export async function signUp(prevState: any, formData: FormData) {
+export async function signUp(prevState: unknown, formData: FormData) {
   const supabase = getSupabaseServerClient();
 
   // Validar datos
@@ -58,7 +57,7 @@ export async function signUp(prevState: any, formData: FormData) {
   redirect("/");
 }
 
-export async function signIn(prevState: any, formData: FormData) {
+export async function signIn(prevState: unknown, formData: FormData) {
   const supabase = getSupabaseServerClient();
 
   // Validar datos

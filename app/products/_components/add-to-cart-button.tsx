@@ -35,12 +35,12 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success("Product added to cart!");
-        
+
         // Update cart count in cache for header badge
         const cartResult = await getCartItems();
         if (cartResult.success && cartResult.data) {
           const totalItems = cartResult.data.reduce(
-            (sum: number, item: any) => sum + item.quantity,
+            (sum: number, item) => sum + item.quantity,
             0
           );
           updateCartCount(totalItems);

@@ -13,7 +13,10 @@ interface UpdateCartItemParams {
   quantity: number;
 }
 
-export async function addToCart({ productColorId, quantity = 1 }: AddToCartParams) {
+export async function addToCart({
+  productColorId,
+  quantity = 1,
+}: AddToCartParams) {
   const supabase = getSupabaseServerClient();
 
   const {
@@ -26,7 +29,7 @@ export async function addToCart({ productColorId, quantity = 1 }: AddToCartParam
   }
 
   // Check if item already exists in cart
-  const { data: existingItem, error: checkError } = await (supabase as any)
+  const { data: existingItem, error: checkError } = await supabase
     .from("cart_items")
     .select("id, quantity")
     .eq("user_id", user.id)
@@ -40,7 +43,7 @@ export async function addToCart({ productColorId, quantity = 1 }: AddToCartParam
 
   if (existingItem) {
     // Update quantity if item exists
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from("cart_items")
       .update({ quantity: existingItem.quantity + quantity })
       .eq("id", existingItem.id);
@@ -50,13 +53,11 @@ export async function addToCart({ productColorId, quantity = 1 }: AddToCartParam
     }
   } else {
     // Insert new item
-    const { error: insertError } = await (supabase as any)
-      .from("cart_items")
-      .insert({
-        user_id: user.id,
-        product_color_id: productColorId,
-        quantity,
-      });
+    const { error: insertError } = await supabase.from("cart_items").insert({
+      user_id: user.id,
+      product_color_id: productColorId,
+      quantity,
+    });
 
     if (insertError) {
       return { success: false, error: insertError.message };
@@ -68,7 +69,10 @@ export async function addToCart({ productColorId, quantity = 1 }: AddToCartParam
   return { success: true };
 }
 
-export async function updateCartItem({ cartItemId, quantity }: UpdateCartItemParams) {
+export async function updateCartItem({
+  cartItemId,
+  quantity,
+}: UpdateCartItemParams) {
   const supabase = getSupabaseServerClient();
 
   const {
@@ -84,7 +88,7 @@ export async function updateCartItem({ cartItemId, quantity }: UpdateCartItemPar
     return removeFromCart(cartItemId);
   }
 
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("cart_items")
     .update({ quantity })
     .eq("id", cartItemId)
@@ -110,7 +114,7 @@ export async function removeFromCart(cartItemId: string) {
     return { success: false, error: "User not authenticated" };
   }
 
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("cart_items")
     .delete()
     .eq("id", cartItemId)
@@ -136,7 +140,7 @@ export async function getCartItems() {
     return { success: false, error: "User not authenticated", data: null };
   }
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("cart_items")
     .select(
       `
@@ -182,7 +186,7 @@ export async function clearCart() {
     return { success: false, error: "User not authenticated" };
   }
 
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("cart_items")
     .delete()
     .eq("user_id", user.id);
