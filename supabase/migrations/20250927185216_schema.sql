@@ -196,7 +196,7 @@ execute procedure kit.handle_update_user_email ();
  * -------------------------------------------------------
  */
 create table products (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default extensions.uuid_generate_v4() primary key,
     name text not null,
     description text,
     price numeric not null,
@@ -216,7 +216,7 @@ create policy "Admin can manage products" on public.products
  * -------------------------------------------------------
  */
 create table product_colors (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default extensions.uuid_generate_v4() primary key,
     product_id uuid references products(id) not null,
     color public.colors not null,
     image_url text,
@@ -236,7 +236,7 @@ create policy "Admin can manage product colors" on public.product_colors
  * -------------------------------------------------------
  */
 create table cart_items (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default extensions.uuid_generate_v4() primary key,
     user_id uuid references auth.users(id) on delete cascade not null,
     product_color_id uuid references product_colors(id) on delete cascade not null,
     quantity int not null default 1,
