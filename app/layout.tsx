@@ -5,7 +5,7 @@ import { ReactQueryProvider } from "./components/react-query-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-
+import { Analytics } from "@vercel/analytics/next";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,11 +19,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     default: "Lettering Shop - Ropa Única con Diseños de Lettering",
-    template: "%s | Lettering Shop"
+    template: "%s | Lettering Shop",
   },
   description:
     "Descubre ropa única con hermosos diseños de lettering y caligrafía. Prendas premium con arte personalizado.",
-  keywords: ["lettering", "caligrafía", "ropa", "diseños únicos", "moda", "apparel", "camisetas"],
+  keywords: [
+    "lettering",
+    "caligrafía",
+    "ropa",
+    "diseños únicos",
+    "moda",
+    "apparel",
+    "camisetas",
+  ],
   authors: [{ name: "Lettering Shop" }],
   openGraph: {
     type: "website",
@@ -31,7 +39,8 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
     siteName: "Lettering Shop",
     title: "Lettering Shop - Ropa Única con Diseños de Lettering",
-    description: "Descubre ropa única con hermosos diseños de lettering y caligrafía",
+    description:
+      "Descubre ropa única con hermosos diseños de lettering y caligrafía",
     images: [
       {
         url: "/images/og-image.png",
@@ -44,7 +53,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Lettering Shop - Ropa Única con Diseños de Lettering",
-    description: "Descubre ropa única con hermosos diseños de lettering y caligrafía",
+    description:
+      "Descubre ropa única con hermosos diseños de lettering y caligrafía",
     images: ["/images/og-image.png"],
   },
   robots: {
@@ -79,6 +89,7 @@ export default function RootLayout({
           <ReactQueryProvider>
             <SiteHeader />
             {children}
+            <Analytics />
             <Toaster position="top-center" richColors={true} />
           </ReactQueryProvider>
         </ThemeProvider>
