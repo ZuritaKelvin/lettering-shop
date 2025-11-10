@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import { getSupabaseServerClient } from "@/supabase/src/clients/server-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Newspaper, Calendar } from "lucide-react";
 
@@ -15,17 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default async function NewsPage() {
-  const supabase = getSupabaseServerClient();
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    redirect("/auth/sign-in");
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-12">

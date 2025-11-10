@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import Link from "next/link";
+import { Suspense } from "react";
 import { SignInMethodsContainer } from "./_components/sign-in-methods-container";
 
 export const generateMetadata = async () => {
@@ -24,7 +25,9 @@ async function SignInPage() {
         </p>
       </div>
 
-      <SignInMethodsContainer />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SignInMethodsContainer />
+      </Suspense>
 
       <div className={"flex justify-center"}>
         <Button asChild variant={"link"} size={"sm"}>

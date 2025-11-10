@@ -1,21 +1,8 @@
-import { redirect } from "next/navigation";
-import { getSupabaseServerClient } from "@/supabase/src/clients/server-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
 export default async function SearchPage() {
-  const supabase = getSupabaseServerClient();
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    redirect("/auth/sign-in");
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-orange-950/20">
       <main className="container mx-auto px-4 py-12">

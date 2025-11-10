@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { addToCart, getCartItems } from "@/app/cart/actions";
@@ -23,6 +24,7 @@ export function AddToCartButton({
   size = "default",
 }: AddToCartButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleAddToCart = async () => {
     setIsLoading(true);
@@ -45,6 +47,10 @@ export function AddToCartButton({
           );
           updateCartCount(totalItems);
         }
+      } else if (result.error === "User not authenticated") {
+        // Redirect to sign-in if user is not authenticated
+        toast.info("Please sign in to add items to cart");
+        router.push("/auth/sign-in?redirect=/cart");
       } else {
         toast.error(result.error || "Failed to add to cart");
       }

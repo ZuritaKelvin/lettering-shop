@@ -13,20 +13,27 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Rutas públicas que no requieren autenticación
-  const publicRoutes = ["/auth/sign-in", "/auth/sign-up"];
-  const isPublicRoute = publicRoutes.some((route) =>
+  // Rutas protegidas que requieren autenticación (compras y perfil)
+  const protectedRoutes = ["/cart", "/profile"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
-  // Si no hay sesión y la ruta no es pública, redirigir a sign-in
-  if (!session && !isPublicRoute) {
+  // Rutas de autenticación
+  const authRoutes = ["/auth/sign-in", "/auth/sign-up"];
+  const isAuthRoute = authRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Si no hay sesión y está intentando acceder a una ruta protegida, redirigir a sign-in
+  if (!session && isProtectedRoute) {
     const redirectUrl = new URL("/auth/sign-in", request.url);
+    redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
   // Si hay sesión y está intentando acceder a sign-in o sign-up, redirigir al home
-  if (session && isPublicRoute) {
+  if (session && isAuthRoute) {
     const redirectUrl = new URL("/", request.url);
     return NextResponse.redirect(redirectUrl);
   }

@@ -64,10 +64,11 @@ function SuccessAlert() {
     <Alert>
       <CheckCircledIcon className={"w-4"} />
 
-      <AlertTitle>U have been registered Successfully!</AlertTitle>
+      <AlertTitle>Registration Successful!</AlertTitle>
 
       <AlertDescription data-test={"email-confirmation-alert"}>
-        A new account was created.
+        Your account has been created. Please check your email to verify your
+        account. You will receive a verification link shortly.
       </AlertDescription>
     </Alert>
   );

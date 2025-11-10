@@ -60,7 +60,7 @@ export default function CartPage() {
     if (result.success && result.data) {
       const items = result.data as CartItem[];
       setCartItems(items);
-      
+
       // Update cart count in cache for header badge
       const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
       updateCartCount(totalItems);
@@ -90,7 +90,10 @@ export default function CartPage() {
       return;
     }
 
-    const result = await updateCartItem({ cartItemId: itemId, quantity: newQuantity });
+    const result = await updateCartItem({
+      cartItemId: itemId,
+      quantity: newQuantity,
+    });
     if (result.success) {
       loadCart();
     } else {
@@ -114,7 +117,7 @@ export default function CartPage() {
   };
 
   const total = cartItems.reduce(
-    (sum, item) => sum + (item.product_colors.products.price * item.quantity),
+    (sum, item) => sum + item.product_colors.products.price * item.quantity,
     0
   );
 
@@ -143,7 +146,9 @@ export default function CartPage() {
             </h1>
             <p className="text-lg text-muted-foreground">
               {cartItems.length > 0
-                ? `${cartItems.length} item${cartItems.length !== 1 ? "s" : ""} in your cart`
+                ? `${cartItems.length} item${
+                    cartItems.length !== 1 ? "s" : ""
+                  } in your cart`
                 : "Your cart is empty"}
             </p>
           </div>
@@ -201,17 +206,13 @@ export default function CartPage() {
                 <Card className="sticky top-24">
                   <CardHeader>
                     <CardTitle>Order Summary</CardTitle>
-                    <CardDescription>
-                      Review your order details
-                    </CardDescription>
+                    <CardDescription>Review your order details</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Subtotal</span>
-                        <span className="font-medium">
-                          €{total.toFixed(2)}
-                        </span>
+                        <span className="font-medium">€{total.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Shipping</span>
@@ -290,12 +291,15 @@ function CartItemCard({
           <div className="flex-1 space-y-2">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-semibold text-foreground">{product.name}</h3>
+                <h3 className="font-semibold text-foreground">
+                  {product.name}
+                </h3>
                 <p className="text-sm text-muted-foreground capitalize">
                   Color: {color.color}
                 </p>
                 <p className="text-xs text-muted-foreground/80">
-                  Delivery: {new Date(product.delivery_date).toLocaleDateString()}
+                  Delivery:{" "}
+                  {new Date(product.delivery_date).toLocaleDateString()}
                 </p>
               </div>
               <Button

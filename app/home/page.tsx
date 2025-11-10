@@ -1,26 +1,30 @@
-import { redirect } from "next/navigation";
-import { getSupabaseServerClient } from "@/supabase/src/clients/server-client";
 import { HeroSection, FeaturesSection, CtaSection } from "./_components";
+import { getSupabaseServerClient } from "@/supabase/src/clients/server-client";
 
 export default async function HomePage() {
-  const supabase = getSupabaseServerClient();
+  // Use public Supabase client
+  const supabase = await getSupabaseServerClient();
 
-  // Get authenticated user
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  // Try to get authenticated user (optional - for personalized experience)
+  let account = null;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (error || !user) {
-    redirect("/auth/sign-in");
+    // Get account information if user is logged in
+    if (user) {
+      const { data } = await supabase
+        .from("accounts")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+      account = data;
+    }
+  } catch (error) {
+    // User not authenticated, continue with public access
+    console.log("No authenticated user");
   }
-
-  // Get account information
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
 
   return (
     <div className="min-h-screen">

@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import { getSupabaseServerClient } from "@/supabase/src/clients/server-client";
 import {
   Card,
   CardContent,
@@ -18,45 +16,30 @@ import { Package, ShoppingCart, Calendar, Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { AddToCartButton } from "./_components/add-to-cart-button";
+import { getSupabaseServerAdminClient } from "@/supabase/src/clients/server-admin-client";
 
 export const metadata: Metadata = {
   title: "Productos",
-  description: "Explora nuestra colección de ropa única con hermosos diseños de lettering y caligrafía. Prendas premium de alta calidad.",
-  keywords: ["productos", "ropa lettering", "camisetas", "diseños únicos", "moda"],
+  description:
+    "Explora nuestra colección de ropa única con hermosos diseños de lettering y caligrafía. Prendas premium de alta calidad.",
+  keywords: [
+    "productos",
+    "ropa lettering",
+    "camisetas",
+    "diseños únicos",
+    "moda",
+  ],
   openGraph: {
     title: "Productos | Lettering Shop",
-    description: "Explora nuestra colección de ropa única con hermosos diseños de lettering",
+    description:
+      "Explora nuestra colección de ropa única con hermosos diseños de lettering",
     type: "website",
   },
 };
 
-interface ProductColor {
-  id: string;
-  color: string;
-  image_url: string | null;
-  stock: number;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  delivery_date: string;
-  product_colors: ProductColor[];
-}
-
 export default async function ProductsPage() {
-  const supabase = getSupabaseServerClient();
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    redirect("/auth/sign-in");
-  }
+  // Use admin client to bypass RLS for public product viewing
+  const supabase = getSupabaseServerAdminClient();
 
   // Fetch products with their colors
   const { data: products, error: productsError } = await supabase
@@ -75,8 +58,7 @@ export default async function ProductsPage() {
         stock
       )
     `
-    )
-    .returns<Product[]>();
+    );
 
   if (productsError) {
     console.error("Error fetching products:", productsError);
@@ -172,7 +154,8 @@ export default async function ProductsPage() {
                                   variant="outline"
                                   className="capitalize"
                                 >
-                                  {colorOption.color} ({colorOption.stock} quedan)
+                                  {colorOption.color} ({colorOption.stock}{" "}
+                                  quedan)
                                 </Badge>
                               ))}
                             </div>
@@ -185,8 +168,8 @@ export default async function ProductsPage() {
                             className="flex-1"
                           />
                           <Link href={`/products/${product.id}`}>
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="icon"
                               aria-label={`Ver detalles de ${product.name}`}
                             >
@@ -208,13 +191,14 @@ export default async function ProductsPage() {
                           <Calendar className="mr-2 h-4 w-4 opacity-70" />
                           <span className="text-xs text-muted-foreground">
                             Entrega:{" "}
-                            {new Date(
-                              product.delivery_date
-                            ).toLocaleDateString("es-ES")}
+                            {new Date(product.delivery_date).toLocaleDateString(
+                              "es-ES"
+                            )}
                           </span>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Haz clic en el icono del ojo para ver todos los detalles
+                          Haz clic en el icono del ojo para ver todos los
+                          detalles
                         </div>
                       </div>
                     </HoverCardContent>
@@ -231,7 +215,8 @@ export default async function ProductsPage() {
                 </h2>
                 <p className="text-muted-foreground text-center max-w-md">
                   Estamos preparando una colección increíble de prendas únicas
-                  con hermosos diseños de lettering y caligrafía. ¡Vuelve pronto!
+                  con hermosos diseños de lettering y caligrafía. ¡Vuelve
+                  pronto!
                 </p>
               </CardContent>
             </Card>
